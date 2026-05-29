@@ -332,7 +332,7 @@ export default function RecruitForm() {
                 type="text"
                 value={form.postalCode}
                 onChange={handlePostalChange}
-                placeholder="123-4567"
+                placeholder="1234567"
                 className={inputCls}
                 autoComplete="postal-code"
               />
@@ -368,7 +368,7 @@ export default function RecruitForm() {
               type="tel"
               value={form.phone}
               onChange={(e) => update("phone", e.target.value)}
-              placeholder="090-1234-5678"
+              placeholder="09012345678"
               className={inputCls}
               autoComplete="tel"
             />
