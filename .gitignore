@@ -22,6 +22,9 @@
 
 # misc
 .DS_Store
+# macOS の AppleDouble ファイル（exFAT 等で自動生成される）
+._*
+.AppleDouble
 *.pem
 
 # debug
@@ -32,6 +35,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.local.example
 
 # vercel
 .vercel
