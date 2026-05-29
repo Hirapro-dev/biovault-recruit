@@ -5,9 +5,9 @@ export const DESIRED_JOBS = ["営業職"] as const;
 
 export const GENDERS = ["男性", "女性"] as const;
 
-export const TATTOO_OPTIONS = ["無", "有"] as const;
+export const TATTOO_OPTIONS = ["有", "無"] as const;
 
-export const SMOKING_OPTIONS = ["喫煙しない", "喫煙する"] as const;
+export const SMOKING_OPTIONS = ["喫煙する", "喫煙しない"] as const;
 
 // 顔写真: ブラウザ側でリサイズ後に data URL(base64) で送信する想定。
 // リサイズ後でも念のためサーバー側で上限チェック（base64 文字列長で約3MBまで）。
@@ -28,7 +28,8 @@ export const submissionSchema = z.object({
   birthMonth: requiredString("生月(月)").max(2),
   birthDay: requiredString("生日(日)").max(2),
   postalCode: requiredString("郵便番号").max(8),
-  address: requiredString("住所").max(200),
+  address1: requiredString("住所").max(200),
+  address2: optionalString(200),
   phone: requiredString("電話番号").max(20),
   email: z.email({ message: "正しいメールアドレスを入力してください" }).max(200),
   desiredJob: z.enum(DESIRED_JOBS, { message: "希望職種を選択してください" }),

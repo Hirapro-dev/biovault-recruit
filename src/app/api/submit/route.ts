@@ -63,7 +63,7 @@ function buildFields(d: Submission, photoUrl: string): FieldRow[] {
     { label: "生年月日", value: `${d.birthYear}年${d.birthMonth}月${d.birthDay}日` },
     { label: "年齢", value: calcAge(d.birthYear, d.birthMonth, d.birthDay) },
     { label: "郵便番号", value: normalizePostal(d.postalCode) },
-    { label: "住所", value: d.address },
+    { label: "住所", value: `${d.address1} ${d.address2}`.trim() },
     { label: "電話番号", value: d.phone },
     { label: "メールアドレス", value: d.email },
     { label: "希望職種", value: d.desiredJob },

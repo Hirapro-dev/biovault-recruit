@@ -20,7 +20,8 @@ const initialForm = {
   birthMonth: "",
   birthDay: "",
   postalCode: "",
-  address: "",
+  address1: "",
+  address2: "",
   phone: "",
   email: "",
   desiredJob: "営業職", // 現在は営業職のみ・初期選択済み
@@ -116,7 +117,7 @@ export default function RecruitForm() {
       const json = await res.json();
       const r = json?.results?.[0];
       if (r) {
-        update("address", `${r.address1}${r.address2}${r.address3}`);
+        update("address1", `${r.address1}${r.address2}${r.address3}`);
       } else {
         setZipMsg("該当する住所が見つかりませんでした。手入力してください。");
       }
@@ -291,7 +292,8 @@ export default function RecruitForm() {
             />
           </Field>
 
-          <Field label="生年月日" required error={errors.birthYear ?? errors.birthMonth ?? errors.birthDay}>
+          {/* 生年月日 + 年齢（区切り線なしで1グループ） */}
+          <FieldGroup label="生年月日" required error={errors.birthYear ?? errors.birthMonth ?? errors.birthDay}>
             <div className="flex flex-wrap items-center gap-2">
               <select value={form.birthYear} onChange={(e) => update("birthYear", e.target.value)} className={selectCls}>
                 <option value="">年</option>
@@ -315,45 +317,51 @@ export default function RecruitForm() {
               </select>
               <span className="text-gray-500">日</span>
             </div>
-          </Field>
+            <SubField label="年齢">
+              <div className="flex items-center gap-2">
+                <input type="text" readOnly value={age} className={`${numInputCls} bg-gray-50`} />
+                <span className="text-gray-500">歳</span>
+              </div>
+            </SubField>
+          </FieldGroup>
 
-          <Field label="年齢">
-            <div className="flex items-center gap-2">
+          {/* 現住所（郵便番号 + 住所×2 を1グループに） */}
+          <FieldGroup label="現住所" required>
+            <SubField label="郵便番号" required error={errors.postalCode}>
               <input
                 type="text"
-                readOnly
-                value={age}
-                className={`${numInputCls} bg-gray-50`}
+                value={form.postalCode}
+                onChange={handlePostalChange}
+                placeholder="123-4567"
+                className={inputCls}
+                autoComplete="postal-code"
               />
-              <span className="text-gray-500">歳</span>
-            </div>
-          </Field>
-
-          <Field label="郵便番号" required error={errors.postalCode}>
-            <input
-              type="text"
-              value={form.postalCode}
-              onChange={handlePostalChange}
-              placeholder="123-4567"
-              className={inputCls}
-              autoComplete="postal-code"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              7桁を入力すると住所が自動入力されます。
-            </p>
-            {zipMsg && <p className="mt-1 text-sm text-amber-600">{zipMsg}</p>}
-          </Field>
-
-          <Field label="住所" required error={errors.address}>
-            <input
-              type="text"
-              value={form.address}
-              onChange={(e) => update("address", e.target.value)}
-              placeholder="番地・建物名・部屋番号まで入力してください"
-              className={inputCls}
-              autoComplete="street-address"
-            />
-          </Field>
+              <p className="mt-1 text-xs text-gray-500">
+                7桁を入力すると住所が自動入力されます。
+              </p>
+              {zipMsg && <p className="mt-1 text-sm text-amber-600">{zipMsg}</p>}
+            </SubField>
+            <SubField label="住所1" required error={errors.address1}>
+              <input
+                type="text"
+                value={form.address1}
+                onChange={(e) => update("address1", e.target.value)}
+                placeholder="都道府県・市区町村・番地"
+                className={inputCls}
+                autoComplete="address-line1"
+              />
+            </SubField>
+            <SubField label="住所2">
+              <input
+                type="text"
+                value={form.address2}
+                onChange={(e) => update("address2", e.target.value)}
+                placeholder="建物名・部屋番号など"
+                className={inputCls}
+                autoComplete="address-line2"
+              />
+            </SubField>
+          </FieldGroup>
 
           <Field label="電話番号" required error={errors.phone}>
             <input
@@ -376,22 +384,24 @@ export default function RecruitForm() {
             />
           </Field>
 
-          <Field label="希望職種" required error={errors.desiredJob}>
+          {/* 希望職種 + 質問（入墨・タトゥー / 喫煙）を1グループに */}
+          <FieldGroup label="希望職種" required error={errors.desiredJob}>
             <RadioGroup
               name="desiredJob"
               options={DESIRED_JOBS}
               value={form.desiredJob}
               onChange={(v) => update("desiredJob", v)}
             />
-          </Field>
-
-          <Field label="入墨・タトゥー" required error={errors.tattoo}>
-            <RadioGroup name="tattoo" options={TATTOO_OPTIONS} value={form.tattoo} onChange={(v) => update("tattoo", v)} />
-          </Field>
-
-          <Field label="喫煙" required error={errors.smoking}>
-            <RadioGroup name="smoking" options={SMOKING_OPTIONS} value={form.smoking} onChange={(v) => update("smoking", v)} />
-          </Field>
+            <div className="space-y-4 pl-4 sm:pl-6">
+              <p className="text-sm font-bold text-slate-900">■以下の質問に回答してください</p>
+              <SubField label="①入墨・タトゥーは入っていますか？" required error={errors.tattoo}>
+                <RadioGroup name="tattoo" options={TATTOO_OPTIONS} value={form.tattoo} onChange={(v) => update("tattoo", v)} />
+              </SubField>
+              <SubField label="②タバコを吸われますか？" required error={errors.smoking}>
+                <RadioGroup name="smoking" options={SMOKING_OPTIONS} value={form.smoking} onChange={(v) => update("smoking", v)} />
+              </SubField>
+            </div>
+          </FieldGroup>
         </Section>
 
         <Section title="職務経歴">
@@ -535,6 +545,54 @@ function Field({
   return (
     <div className="py-5">
       <label className="mb-2 block text-base font-bold text-slate-900">
+        {label}
+        {required && <span className="ml-0.5 text-red-600">※</span>}
+      </label>
+      {children}
+      {error && error.length > 0 && <p className="mt-1 text-sm text-red-600">{error[0]}</p>}
+    </div>
+  );
+}
+
+// 複数の項目を1つのメインラベル配下にまとめる（内部に区切り線を入れない）
+function FieldGroup({
+  label,
+  required,
+  error,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  error?: string[];
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="py-5">
+      <p className="mb-3 text-base font-bold text-slate-900">
+        {label}
+        {required && <span className="ml-0.5 text-red-600">※</span>}
+      </p>
+      <div className="space-y-4">{children}</div>
+      {error && error.length > 0 && <p className="mt-1 text-sm text-red-600">{error[0]}</p>}
+    </div>
+  );
+}
+
+// グループ内の小項目（サブラベル付き・区切り線なし）
+function SubField({
+  label,
+  required,
+  error,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  error?: string[];
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="mb-1.5 block text-sm font-medium text-gray-700">
         {label}
         {required && <span className="ml-0.5 text-red-600">※</span>}
       </label>
