@@ -107,10 +107,10 @@ export default function RecruitForm() {
 
   // 郵便番号 → 住所自動入力（zipcloud API）
   async function handlePostalChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value;
-    update("postalCode", value);
+    // 数字のみ許可（数字以外は除去）
+    const digits = e.target.value.replace(/[^0-9]/g, "");
+    update("postalCode", digits);
     setZipMsg("");
-    const digits = value.replace(/[^0-9]/g, "");
     if (digits.length !== 7) return;
     try {
       const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${digits}`);
@@ -330,6 +330,8 @@ export default function RecruitForm() {
             <SubField label="郵便番号" required error={errors.postalCode}>
               <input
                 type="text"
+                inputMode="numeric"
+                maxLength={7}
                 value={form.postalCode}
                 onChange={handlePostalChange}
                 placeholder="1234567"

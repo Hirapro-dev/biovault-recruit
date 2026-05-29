@@ -28,8 +28,12 @@ function calcAge(year: string, month: string, day: string): string {
   return String(age);
 }
 
-// 郵便番号に 〒 を付与（既に付いていればそのまま）
+// 郵便番号を 〒123-4567 形式に整形（7桁の数字なら区切りを付与）
 function normalizePostal(value: string): string {
+  const digits = value.replace(/[^0-9]/g, "");
+  if (digits.length === 7) {
+    return `〒${digits.slice(0, 3)}-${digits.slice(3)}`;
+  }
   const t = value.trim();
   return t.startsWith("〒") ? t : `〒${t}`;
 }
