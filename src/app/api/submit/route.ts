@@ -90,9 +90,9 @@ function buildText(fields: FieldRow[]): string {
 }
 
 // 応募者への自動返信メール
-const AUTO_REPLY_SUBJECT = "【株式会社MRT】ご応募いただき誠にありがとうございます。";
+const AUTO_REPLY_SUBJECT = "【株式会社BioVault】ご応募いただき誠にありがとうございます。";
 
-const AUTO_REPLY_BODY = `この度は、株式会社MRTに
+const AUTO_REPLY_BODY = `この度は、株式会社BioVaultに
 ご応募いただき、誠にありがとうございます＾＾
 
 
@@ -103,17 +103,17 @@ const AUTO_REPLY_BODY = `この度は、株式会社MRTに
 なにか気になることなどありましたらお気軽にご連絡ください。
 
 
-                          株式会社MRT 採用グループ
+                          株式会社BioVault 採用グループ
 
 
 
 □■――――――――――――――■□
-株式会社MRT 採用グループ
-採用問い合わせ：recruit@mrt.co.jp
+株式会社BioVault 採用グループ
+採用問い合わせ：recruit@BioVault.co.jp
 電話番号：0120-325-699
-会社HP：https://mrt.co.jp/
+会社HP：https://BioVault.co.jp/
 □■――――――――――――――■□
-(c) 株式会社MRT All Rights Reserved.`;
+(c) 株式会社BioVault All Rights Reserved.`;
 
 // 応募者の氏名を冒頭に差し込む
 function autoReplyText(name: string): string {

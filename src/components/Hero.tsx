@@ -19,7 +19,7 @@ export default function Hero() {
       <div className="absolute left-5 top-5 z-10 sm:left-8 sm:top-7">
         <Image
           src="/logo_white.png"
-          alt="MRT inc."
+          alt="BioVault inc."
           width={1901}
           height={490}
           priority

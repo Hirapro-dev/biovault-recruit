@@ -34,7 +34,7 @@ export default function Home() {
       </div>
 
       <footer className="pb-10 text-center text-xs text-white/60">
-        ©2025 株式会社MRT
+        ©2025 株式会社BioVault
       </footer>
     </main>
   );
