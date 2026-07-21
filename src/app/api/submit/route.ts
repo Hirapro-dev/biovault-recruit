@@ -138,13 +138,22 @@ function buildHtml(fields: FieldRow[]): string {
   return `<div style="font-family:sans-serif;color:#111;font-size:14px;line-height:1.7;max-width:680px;">${rows}</div>`;
 }
 
+function parseNotifyTo(value: string | undefined): string[] {
+  return (
+    value
+      ?.split(",")
+      .map((email) => email.trim())
+      .filter(Boolean) ?? []
+  );
+}
+
 export async function POST(request: Request) {
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.RECRUIT_NOTIFY_TO;
+  const notifyTo = parseNotifyTo(process.env.RECRUIT_NOTIFY_TO);
   const from = process.env.RESEND_FROM ?? "onboarding@resend.dev";
   const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
 
-  if (!apiKey || !to || !blobToken) {
+  if (!apiKey || notifyTo.length === 0 || !blobToken) {
     console.error(
       "RESEND_API_KEY / RECRUIT_NOTIFY_TO / BLOB_READ_WRITE_TOKEN のいずれかが未設定です",
     );
@@ -201,14 +210,14 @@ export async function POST(request: Request) {
   }
 
   const fields = buildFields(data, photoUrl);
-  const fromHeader = `株式会社MRT 採用グループ <${from}>`;
+  const fromHeader = `株式会社BioVault 採用グループ <${from}>`;
 
   const resend = new Resend(apiKey);
 
   // 1. 採用担当への通知メール（これが必須）
   const notify = await resend.emails.send({
     from: fromHeader,
-    to,
+    to: notifyTo,
     replyTo: data.email,
     subject: `【採用応募】${data.name} 様（${data.desiredJob}）`,
     text: buildText(fields),
@@ -227,7 +236,7 @@ export async function POST(request: Request) {
   const autoReply = await resend.emails.send({
     from: fromHeader,
     to: data.email,
-    replyTo: to,
+    replyTo: notifyTo[0],
     subject: AUTO_REPLY_SUBJECT,
     text: autoReplyText(data.name),
     html: autoReplyHtml(data.name),
