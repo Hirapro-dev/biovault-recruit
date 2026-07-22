@@ -147,6 +147,19 @@ function parseNotifyTo(value: string | undefined): string[] {
   );
 }
 
+type ResendError = { message?: string; name?: string; statusCode?: number | null };
+
+function userFacingMailError(error: ResendError): string {
+  const msg = error.message ?? "";
+  if (msg.includes("domain is not verified") || msg.includes("verify a domain")) {
+    return "メール送信の設定（送信元ドメイン）が未完了です。管理者にお問い合わせください。";
+  }
+  if (msg.includes("testing emails to your own email") || msg.includes("onboarding@resend.dev")) {
+    return "メール送信の設定（テスト用送信元）では本番宛先に送れません。管理者にお問い合わせください。";
+  }
+  return "メール送信に失敗しました。時間をおいて再度お試しください。";
+}
+
 export async function POST(request: Request) {
   const apiKey = process.env.RESEND_API_KEY;
   const notifyTo = parseNotifyTo(process.env.RECRUIT_NOTIFY_TO);
@@ -225,9 +238,18 @@ export async function POST(request: Request) {
   });
 
   if (notify.error) {
-    console.error("通知メール送信エラー:", notify.error);
+    console.error("通知メール送信エラー:", {
+      from,
+      notifyTo,
+      ...notify.error,
+    });
     return NextResponse.json(
-      { error: "メール送信に失敗しました。時間をおいて再度お試しください。" },
+      {
+        error: userFacingMailError(notify.error),
+        ...(process.env.NODE_ENV === "development"
+          ? { detail: notify.error.message }
+          : {}),
+      },
       { status: 502 },
     );
   }
