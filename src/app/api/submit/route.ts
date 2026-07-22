@@ -109,9 +109,9 @@ const AUTO_REPLY_BODY = `この度は、株式会社BioVaultに
 
 □■――――――――――――――■□
 株式会社BioVault 採用グループ
-採用問い合わせ：recruit@BioVault.co.jp
+採用問い合わせ：recruit@biovault.co.jp
 電話番号：0120-325-699
-会社HP：https://BioVault.co.jp/
+会社HP：https://biovault.co.jp/
 □■――――――――――――――■□
 (c) 株式会社BioVault All Rights Reserved.`;
 
